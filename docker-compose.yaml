@@ -1,0 +1,29 @@
+services:
+  backend:
+    container_name: service_backend
+    build: ./backend/
+    command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - ./TaskManagerService/:/service
+    ports:
+      - 5252:5252
+    env_file:
+      - .envfile
+    depends_on:
+      - db
+    networks:
+      - backend
+  db:
+    image: postgres:16.1
+    container_name: service_db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file:
+      - .envfile
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
