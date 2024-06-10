@@ -5,3 +5,5 @@ POSTGRES_PORT=
 POSTGRES_HOST=
 DJANGO_SECRET=
 DEBUG=
+
+# env file must be .envfile

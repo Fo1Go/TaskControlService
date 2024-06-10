@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import (ListAPIView, ListCreateAPIView,
@@ -7,7 +8,6 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.utils import timezone
 from rest_framework.views import APIView
 
 from .models import Task, User, ROLES
@@ -18,7 +18,7 @@ from .serializers import TaskSerializer, UserSerializer
 class TaskCloseView(APIView):
     model = Task
     serializer_class = TaskSerializer
-    permission_classes = (IsUserAdmin | IsOwner, )
+    permission_classes = (IsUserAdmin | IsOwner,)
 
     def get_object(self):
         return get_object_or_404(self.model, pk=self.kwargs.get('pk'))
@@ -57,7 +57,7 @@ class TaskDetailView(UpdateAPIView, RetrieveAPIView):
 class TaskListView(ListAPIView, CreateAPIView):
     model = Task
     queryset = Task.objects.filter(status=Task.STATUS_WAITING)
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = TaskSerializer
     pagination_class = PageNumberPagination
     page_size = 20
@@ -81,14 +81,14 @@ class TaskListView(ListAPIView, CreateAPIView):
 class EmployersList(ListAPIView):
     queryset = User.objects.filter(groups__name=ROLES.EMPLOYER)
     serializer_class = UserSerializer
-    permission_classes = (IsUserCustomer, )
+    permission_classes = (IsUserCustomer,)
     pagination_class = PageNumberPagination
     page_size = 20
 
 
 class UserListCreateView(ListCreateAPIView):
     serializer_class = UserSerializer
-    permission_classes = (IsUserAdmin | IsUserEmployer, )
+    permission_classes = (IsUserAdmin | IsUserEmployer,)
 
     def get(self, request, *args, **kwargs):
         return Response(UserSerializer(User.objects.all(), many=True).data, status.HTTP_200_OK)
@@ -108,7 +108,7 @@ class UserListCreateView(ListCreateAPIView):
 
 
 class UserView(RetrieveAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs.get('pk'))
@@ -116,14 +116,14 @@ class UserView(RetrieveAPIView):
 
 
 class MeView(RetrieveAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         return Response(UserSerializer(request.user).data, status.HTTP_200_OK)
 
 
 class MyTasksView(ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = TaskSerializer
     model = Task
 
